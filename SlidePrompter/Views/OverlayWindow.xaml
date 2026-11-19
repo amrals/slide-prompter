@@ -1,0 +1,138 @@
+<Window x:Class="SlidePrompter.Views.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SlidePrompter.ViewModels"
+        Title="SlidePrompter Overlay"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        ResizeMode="NoResize"
+        SizeToContent="Height"
+        Width="{Binding BarWidth, Mode=OneWay}"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
+
+    <Border x:Name="PillContainer"
+            CornerRadius="12"
+            Background="{Binding BackgroundOpacity, Converter={StaticResource OpacityToPillBrushConverter}}"
+            BorderBrush="{Binding IsClickThrough, Converter={StaticResource ClickThroughToBorderBrushConverter}}"
+            BorderThickness="1"
+            Padding="14,10,12,10">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Mode 1: Single-Line Horizontal Ticker -->
+            <Grid x:Name="HorizontalViewport"
+                  Grid.Column="0"
+                  ClipToBounds="True"
+                  VerticalAlignment="Center"
+                  Visibility="{Binding IsSingleLineMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#00000000" Offset="0.0"/>
+                        <GradientStop Color="#FF000000" Offset="0.08"/>
+                        <GradientStop Color="#FF000000" Offset="0.92"/>
+                        <GradientStop Color="#00000000" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Grid.OpacityMask>
+
+                <Canvas x:Name="HorizontalCanvas"
+                        Height="34"
+                        VerticalAlignment="Center">
+                    <TextBlock x:Name="SingleLineTextBlock"
+                               Text="{Binding CurrentSingleLineText}"
+                               FontFamily="Segoe UI"
+                               FontSize="{Binding FontSize}"
+                               FontWeight="Medium"
+                               Foreground="#F5F6FA"
+                               TextWrapping="NoWrap"
+                               TextOptions.TextFormattingMode="Ideal"
+                               Canvas.Left="0"
+                               Canvas.Top="0">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform x:Name="HorizontalTranslate" X="0" Y="0"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </Canvas>
+            </Grid>
+
+            <!-- Mode 2: Compact Two-Line Vertical Block -->
+            <Grid x:Name="VerticalViewport"
+                  Grid.Column="0"
+                  Height="68"
+                  ClipToBounds="True"
+                  VerticalAlignment="Center"
+                  Visibility="{Binding IsCompactBlockMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#44000000" Offset="0.0"/>
+                        <GradientStop Color="#FF000000" Offset="0.14"/>
+                        <GradientStop Color="#FF000000" Offset="0.86"/>
+                        <GradientStop Color="#44000000" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Grid.OpacityMask>
+
+                <Canvas x:Name="VerticalCanvas">
+                    <TextBlock x:Name="MultiLineTextBlock"
+                               Text="{Binding CurrentMultiLineText}"
+                               FontFamily="Segoe UI"
+                               FontSize="{Binding FontSize}"
+                               FontWeight="Medium"
+                               Foreground="#F5F6FA"
+                               TextWrapping="Wrap"
+                               LineStackingStrategy="BlockLineHeight"
+                               LineHeight="32"
+                               TextOptions.TextFormattingMode="Ideal"
+                               Canvas.Left="0"
+                               Canvas.Top="0">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform x:Name="VerticalTranslate" X="0" Y="0"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </Canvas>
+            </Grid>
+
+            <!-- Discreet Corner Status Badge ([Slide / Total] + Active/Paused Dot + Transient HUD) -->
+            <Border Grid.Column="1"
+                    Margin="10,0,0,0"
+                    Padding="8,4"
+                    CornerRadius="8"
+                    Background="#22FFFFFF"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right">
+                        <Ellipse Width="7"
+                                 Height="7"
+                                 Margin="0,0,6,0"
+                                 VerticalAlignment="Center"
+                                 Fill="{Binding PlaybackState, Converter={StaticResource PlaybackStateToDotBrushConverter}}"/>
+                        <TextBlock Text="{Binding SlideCounterText}"
+                                   FontFamily="Segoe UI"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#D1D5DB"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding HudMessage}"
+                               Visibility="{Binding HasHudMessage, Converter={StaticResource BoolToVisibilityConverter}}"
+                               FontFamily="Segoe UI"
+                               FontSize="10"
+                               FontWeight="Medium"
+                               Foreground="#A5B4FC"
+                               HorizontalAlignment="Right"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+
